@@ -734,6 +734,7 @@ const TABS = [
   { id: 'training',   label: '📅 Training' },
   { id: 'incidents',  label: '🚨 Incidents' },
   { id: 'wac',        label: '📑 WAC Reference' },
+  { id: 'dailylog',   label: '📝 Daily Log' },
   { id: 'setup',      label: '⚙️ Setup Guide' },
 ];
 
@@ -798,6 +799,7 @@ export default function App() {
           {tab === 'training'   && <TrainingTracker staff={staff} />}
           {tab === 'incidents'  && <IncidentReporting incidents={incidents} setIncidents={setIncidents} residents={residents} sheetsLive={sheetsLive} />}
           {tab === 'wac'        && <WACReference />}
+           {tab === 'dailylog'   && <DailyLogGenerator />}
           {tab === 'setup'      && <SetupGuide />}
         </div>
       </div>
