@@ -22,6 +22,7 @@ const COMPLAINTS = [
 const SHIFTS  = ["Morning (6am–2pm)", "Afternoon (2pm–10pm)", "Overnight (10pm–6am)"];
 const TITLES  = ["Caregiver", "House Manager", "Program Manager", "Nurse", "Other"];
 const MODEL   = "claude-sonnet-4-20250514";
+const API_KEY = process.env.REACT_APP_ANTHROPIC_API_KEY || "";
 const todayStr = () => new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
 export default function DailyLogGenerator() {
@@ -46,6 +47,7 @@ export default function DailyLogGenerator() {
 
   const generate = async () => {
     if (!ready) { setError("Please fill in all required fields (marked *)."); return; }
+    if (!API_KEY) { setError("Anthropic API key not configured. Add REACT_APP_ANTHROPIC_API_KEY in Vercel environment variables."); return; }
     setError(""); setLoading(true); setNote(""); setSaved(false);
     const prompt = `You are a professional Adult Family Home (AFH) caregiver writing a DSHS-compliant daily log note. Write in objective, first-person, professional language. Be specific, factual, and concise. Use past tense.
 
@@ -64,15 +66,21 @@ ${form.additionalNotes? `- Additional notes: ${form.additionalNotes}` : ""}
 
 Write a single cohesive daily log paragraph (4-8 sentences). Start with the resident's name and shift. Include mood, activities, any incidents with staff response, notifications, and concerns. End with: "${form.staffName}, ${form.staffTitle}".`;
     try {
-      const res  = await fetch("https://api.anthropic.com/v1/messages", {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": API_KEY,
+          "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true",
+        },
         body: JSON.stringify({ model: MODEL, max_tokens: 1000, messages: [{ role: "user", content: prompt }] }),
       });
       const data = await res.json();
-      setNote(data.content?.find(b => b.type === "text")?.text?.trim() || "");
-    } catch { setError("Failed to generate note. Please try again."); }
-    finally   { setLoading(false); }
+      if (data.error) { setError(`API error: ${data.error.message}`); }
+      else { setNote(data.content?.find(b => b.type === "text")?.text?.trim() || ""); }
+    } catch (e) { setError("Failed to generate note. Please try again."); }
+    finally { setLoading(false); }
   };
 
   const saveToSheets = async () => {
@@ -95,13 +103,11 @@ Write a single cohesive daily log paragraph (4-8 sentences). Start with the resi
 
   return (
     <div>
-      {/* Header */}
       <div className="section-title">Daily Log Generator</div>
       <div style={{ marginBottom: 24, color: 'var(--muted)', fontSize: 12 }}>
         AI-powered shift notes in under 2 minutes · DSHS-compliant language · Copy-ready
       </div>
 
-      {/* Section 1: Shift Info */}
       <Section label="🗒️  Shift Information" sub="Basic details for this shift entry">
         <div style={grid3}>
           <Field label="RESIDENT NAME" required>
@@ -129,7 +135,6 @@ Write a single cohesive daily log paragraph (4-8 sentences). Start with the resi
         </div>
       </Section>
 
-      {/* Section 2: Resident Status */}
       <Section label="🧍  Resident Status" sub="Mood, behavior, and general presentation this shift">
         <div style={grid2}>
           <Field label="OVERALL MOOD / PRESENTATION" required>
@@ -170,7 +175,6 @@ Write a single cohesive daily log paragraph (4-8 sentences). Start with the resi
         </div>
       </Section>
 
-      {/* Section 3: Incidents */}
       <Section label="⚠️  Incidents, Concerns & Notifications" sub="Leave blank if none — only fill what applies">
         <Field label="ANY BEHAVIORAL INCIDENTS?">
           <textarea
@@ -193,10 +197,8 @@ Write a single cohesive daily log paragraph (4-8 sentences). Start with the resi
         </Field>
       </Section>
 
-      {/* Error */}
       {error && <div className="alert-banner red" style={{ marginBottom: 16 }}>⚠ {error}</div>}
 
-      {/* Generate button */}
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 28 }}>
         <button
           className="btn btn-primary"
@@ -208,7 +210,6 @@ Write a single cohesive daily log paragraph (4-8 sentences). Start with the resi
         </button>
       </div>
 
-      {/* Output */}
       {(loading || note) && (
         <Section label="✅  Your Daily Log Note" sub="Ready to copy into your log · Review and customize before filing">
           <div className="alert-banner blue">
