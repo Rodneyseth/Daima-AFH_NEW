@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { sheetsAppend, SHEETS_CONFIG } from "../config/sheetsConfig";
+import { sheetsAppend, SHEETS_CONFIG } from "./sheetsConfig";
 
 // ── helpers ────────────────────────────────────────────────────────────────
 const today = () => new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
