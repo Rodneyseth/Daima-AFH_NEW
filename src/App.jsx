@@ -1,6 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect, useRef } from ‘react’;
-import { sheetsRead, sheetsAppend, SHEETS_CONFIG } from ‘./sheetsConfig’;
+import { useState, useEffect, useRef } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { sheetsRead, sheetsAppend, SHEETS_CONFIG } from './sheetsConfig';
+import SignIn from './SignIn';
+import { supabase } from './supabaseClient';
 
 const STYLE = `
 @import url(‘https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Mono:wght@300;400;500&display=swap’);
@@ -1159,7 +1162,7 @@ const TABS = [
 { id:‘wac’,        label:‘WAC Reference’ },
 ];
 
-export default function App() {
+function MainApp() {
 const [tab,setTab]=useState(‘dashboard’);
 const [residents]=useState(DEFAULT_RESIDENTS);
 const [staff]=useState(DEFAULT_STAFF);
@@ -1237,4 +1240,27 @@ return (
 </div>
 </>
 );
+}
+
+export default function App() {
+  const [session, setSession] = useState(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={!session ? <SignIn /> : <Navigate to="/" />} />
+        <Route path="/" element={session ? <MainApp /> : <Navigate to="/login" />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
