@@ -19,7 +19,7 @@ const COMPLAINTS = [
   "Fatigue / low energy", "Shortness of breath", "Other (see notes)",
 ];
 
-const SHIFTS  = ["Morning (6am–2pm)", "Afternoon (2pm–10pm)", "Overnight (10pm–6am)"];
+const SHIFTS  = ["Morning (6am-2pm)", "Afternoon (2pm-10pm)", "Overnight (10pm-6am)"];
 const TITLES  = ["Caregiver", "House Manager", "Program Manager", "Nurse", "Other"];
 const MODEL   = "claude-sonnet-4-20250514";
 const API_KEY = process.env.REACT_APP_ANTHROPIC_API_KEY || "";
@@ -118,7 +118,7 @@ Write a single cohesive daily log paragraph (4-8 sentences). Start with the resi
           </Field>
           <Field label="SHIFT" required>
             <select value={form.shift} onChange={e => set("shift", e.target.value)}>
-              <option value="">— Select —</option>
+              <option value="">-- Select --</option>
               {SHIFTS.map(s => <option key={s}>{s}</option>)}
             </select>
           </Field>
@@ -139,7 +139,7 @@ Write a single cohesive daily log paragraph (4-8 sentences). Start with the resi
         <div style={grid2}>
           <Field label="OVERALL MOOD / PRESENTATION" required>
             <select value={form.mood} onChange={e => set("mood", e.target.value)}>
-              <option value="">— Select —</option>
+              <option value="">-- Select --</option>
               {MOODS.map(m => <option key={m}>{m}</option>)}
             </select>
           </Field>
@@ -175,7 +175,7 @@ Write a single cohesive daily log paragraph (4-8 sentences). Start with the resi
         </div>
       </Section>
 
-      <Section label="⚠️  Incidents, Concerns & Notifications" sub="Leave blank if none — only fill what applies">
+      <Section label="⚠️  Incidents, Concerns & Notifications" sub="Leave blank if none -- only fill what applies">
         <Field label="ANY BEHAVIORAL INCIDENTS?">
           <textarea
             style={{ minHeight: 80 }}
@@ -189,7 +189,7 @@ Write a single cohesive daily log paragraph (4-8 sentences). Start with the resi
             <textarea style={{ minHeight: 65 }} placeholder="Example: Guardian called at 3:00 PM re: upcoming appointment." value={form.notifications} onChange={e => set("notifications", e.target.value)} />
           </Field>
           <Field label="CONCERNS / FOLLOW-UP NEEDED">
-            <textarea style={{ minHeight: 65 }} placeholder="Example: Resident eating less for 3 days — recommend physician follow-up." value={form.concerns} onChange={e => set("concerns", e.target.value)} />
+            <textarea style={{ minHeight: 65 }} placeholder="Example: Resident eating less for 3 days -- recommend physician follow-up." value={form.concerns} onChange={e => set("concerns", e.target.value)} />
           </Field>
         </div>
         <Field label="ADDITIONAL NOTES">
@@ -206,7 +206,7 @@ Write a single cohesive daily log paragraph (4-8 sentences). Start with the resi
           disabled={loading}
           style={{ minWidth: 260, fontSize: 13, padding: '12px 28px' }}
         >
-          {loading ? "Generating…" : "✦ Generate Daily Log Note"}
+          {loading ? "Generating..." : "✦ Generate Daily Log Note"}
         </button>
       </div>
 
@@ -217,7 +217,7 @@ Write a single cohesive daily log paragraph (4-8 sentences). Start with the resi
           </div>
           <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, padding: '18px 20px', minHeight: 80 }}>
             {loading
-              ? <span style={{ color: 'var(--muted)', fontSize: 13 }}>Generating your note…</span>
+              ? <span style={{ color: 'var(--muted)', fontSize: 13 }}>Generating your note...</span>
               : <p style={{ margin: 0, fontSize: 13, lineHeight: 1.8, color: 'var(--text)', whiteSpace: 'pre-wrap' }}>{note}</p>
             }
           </div>
@@ -227,7 +227,7 @@ Write a single cohesive daily log paragraph (4-8 sentences). Start with the resi
                 {copied ? "✓ Copied!" : "Copy to Clipboard"}
               </button>
               <button className="btn btn-ghost btn-sm" onClick={saveToSheets} disabled={saving || saved}>
-                {saving ? "Saving…" : saved ? "✓ Saved to Sheets" : "Save to Google Sheets"}
+                {saving ? "Saving..." : saved ? "✓ Saved to Sheets" : "Save to Google Sheets"}
               </button>
             </div>
           )}
