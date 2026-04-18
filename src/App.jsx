@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { sheetsRead, sheetsAppend, SHEETS_CONFIG } from './sheetsConfig';
-import SignIn from './SignIn';
+import AuthPage from './AuthPage';
 import { supabase } from './supabaseClient';
 
 const STYLE = `
@@ -1254,7 +1254,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={!session ? <SignIn /> : <Navigate to="/" />} />
+        <Route path="/login" element={!session ? <AuthPage /> : <Navigate to="/" />} />
         <Route path="/" element={session ? <MainApp /> : <Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>
