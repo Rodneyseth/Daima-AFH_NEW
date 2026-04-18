@@ -45,7 +45,7 @@ export default function AuthPage() {
     const email = `${generatedId}${proxyDomain}`;
 
     // 2. Sign up with Supabase Auth
-    const { data: authData, error: authError } = await supabase.auth.signUp({
+    const { error: authError } = await supabase.auth.signUp({
       email,
       password,
     });
