@@ -14,7 +14,7 @@ export default async function handler(req, res) {
 
   // 1. Generate Staff ID
   const generatedId = `S-${Math.floor(1000 + Math.random() * 9000)}`;
-  const email = `${generatedId}@staff.daima-afh.internal`;
+  const email = `${generatedId}@staff.daima-afh.com`;
 
   // 2. Create Auth user via admin API — bypasses email validation & confirmation
   const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
