@@ -19,7 +19,7 @@ export default function AuthPage() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
 
-  const proxyDomain = '@daima.local';
+  const proxyDomain = '@staff.daima-afh.com';
 
   const handleSignIn = async (e) => {
     e.preventDefault();
