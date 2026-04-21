@@ -40,44 +40,30 @@ export default function AuthPage() {
     setError(null);
     setSuccess(null);
 
-    // 1. Generate a random Staff ID: S-XXXX
-    const generatedId = `S-${Math.floor(1000 + Math.random() * 9000)}`;
-    const email = `${generatedId}${proxyDomain}`;
+    try {
+      // Call the server-side admin API — bypasses Supabase email validation
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password, name, role, cprExpiry, hcaExpiry, foodExpiry, dementiaExpiry }),
+      });
 
-    // 2. Sign up with Supabase Auth
-    const { error: authError } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+      const data = await res.json();
 
-    if (authError) {
-      setError(authError.message);
-      setLoading(false);
-      return;
+      if (!res.ok) {
+        setError(data.error || 'Sign up failed. Please try again.');
+        setLoading(false);
+        return;
+      }
+
+      const generatedId = data.staffId;
+      setSuccess(`Account registered! Your Staff ID is: ${generatedId}. Use it to sign in.`);
+      setStaffId(generatedId);
+      setIsSignUp(false);
+    } catch (err) {
+      setError('Network error. Please check your connection and try again.');
     }
 
-    // 3. Create the Staff record in the database
-    const { error: dbError } = await supabase.from('staff').insert([{
-      staff_id: generatedId,
-      name,
-      role,
-      cpr_expiry: cprExpiry || null,
-      hca_expiry: hcaExpiry || null,
-      food_expiry: foodExpiry || null,
-      dementia_expiry: dementiaExpiry || null,
-      hired_date: new Date().toISOString().split('T')[0],
-      notes: 'Self-registered'
-    }]);
-
-    if (dbError) {
-      setError(dbError.message);
-      setLoading(false);
-      return;
-    }
-    
-    // Auto sign-in or handle success (Supabase signIn is usually automatic if no email config is required)
-    setSuccess(`Account registered successfully! Your designated Staff ID is: ${generatedId}. Please use it to log in.`);
-    setStaffId(generatedId);
     setLoading(false);
   };
 
